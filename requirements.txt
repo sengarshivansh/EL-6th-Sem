@@ -1,0 +1,9 @@
+# Smart Grid / Digital Twin Streamlit apps
+# Python 3.10–3.12 recommended (TensorFlow wheels vary by version).
+
+streamlit>=1.28.0
+pandas>=2.0.0
+numpy>=1.24.0
+joblib>=1.3.0
+xgboost>=2.0.0
+tensorflow>=2.15.0
