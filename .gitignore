@@ -222,3 +222,5 @@ __marimo__/
 *.pkl
 *.joblib
 *.csv
+__pycache__/ 
+"*.pyc" 
