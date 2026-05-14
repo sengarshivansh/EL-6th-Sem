@@ -1,102 +1,174 @@
-# Smart Grid Digital Twin (Streamlit)
+# Smart Grid Digital Twin
 
-Streamlit dashboards that simulate a microgrid using an LSTM load forecaster (V1) and a hybrid LSTM + XGBoost solar/load setup (V2).
+A Streamlit-based dashboard that simulates a **microgrid** using AI models for load and solar power forecasting.
 
-## Prerequisites
-
-- **Python 3.10–3.12** (pick a version that has a [TensorFlow pip wheel](https://www.tensorflow.org/install/pip) for your OS).
-- **Git** (to clone this repository).
-
-## 1. Clone the repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
-cd YOUR_REPO
-
-
-If your folder path contains spaces (e.g. EL 5th Sem), keep the path in quotes on Windows:
-
-    cd "C:\path\to\EL 5th Sem"
-
-2. Create a virtual environment
-    Using venv (recommended):
-
-        Windows (PowerShell)
-
-            python -m venv venv
-            .\venv\Scripts\Activate.ps1
-        Windows (Command Prompt)
-
-            python -m venv venv
-            venv\Scripts\activate.bat
-
-
-        macOS / Linux
-
-            python3 -m venv venv
-            source venv/bin/activate
-            You should see (venv) in your shell prompt.
-
-3. Upgrade pip and install dependencies
-    python -m pip install --upgrade pip
-    python -m pip install -r requirements.txt
-    This installs: Streamlit, pandas, NumPy, joblib, XGBoost, and TensorFlow.
-
-Optional: silence pandas warnings
-If pandas warns about numexpr or bottleneck, you can install:
-
-        python -m pip install "numexpr>=2.10.2" "bottleneck>=1.4.2"
-
-
-4. Required data and model files
-        Place these files in the project root (same folder as app_v2.py):
-
-        File	Used by
-        clean_solar_15min.csv
-        V2 (simulation_engine_v2.py)
-        BR02_final_data.csv
-        V1 and V2
-        lstm_model.h5
-        V1 and V2
-        scaler.pkl
-        V1 and V2
-        solar_xgb_model.pkl
-        V2 only
-        If any file is missing, the app will fail on startup with a file-not-found or load error.
-
-        GitHub: Large binaries (.h5, .pkl, big .csv) may exceed GitHub limits. Use Git LFS, a release asset, or a shared drive—and document where teammates should download them.
-
-5. Run the Streamlit app
-Always use python -m streamlit so you use the same interpreter as your venv (avoids accidentally using another Python, e.g. Anaconda, on your PATH).
-
-V2 — Hybrid AI (LSTM + XGBoost)
-
-python -m streamlit run app_v2.py
-V1 — LSTM only
-
-python -m streamlit run app.py
-Then open the URL shown in the terminal (usually http://localhost:8501).
-
-6. Stop the app
-Press Ctrl+C in the terminal. To leave the virtual environment:
-
-Windows: deactivate (after activate.bat) or close the terminal.
-macOS/Linux: deactivate.
-Troubleshooting
-Problem	What to try
-ModuleNotFoundError (e.g. xgboost)
-Activate the venv, then python -m pip install -r requirements.txt, then python -m streamlit run ....
-Streamlit runs but imports come from Anaconda paths
-You ran streamlit instead of venv’s Python. Use python -m streamlit run app_v2.py after activating venv.
-TensorFlow install fails
-Match Python version to a supported TensorFlow build; see official install docs.
-Port 8501 in use
-python -m streamlit run app_v2.py --server.port 8502
-Project layout (main pieces)
-app_v2.py — Streamlit UI for the hybrid V2 twin.
-simulation_engine_v2.py — Loads CSVs, LSTM, scaler, and XGBoost solar model.
-app.py / simulation_engine.py — Earlier single-LSTM version.
-Replace YOUR_USERNAME / YOUR_REPO in the clone URL with your real GitHub repository.
+Two versions are included:
+- **V1** — LSTM-based load forecasting only
+- **V2** — Hybrid LSTM + XGBoost for both load and solar forecasting
 
 ---
-**Summary:** I added a matching **`requirements.txt`** in the instructions 
+
+## 🗂️ Project Structure
+
+```
+EL-6th-Sem/
+├── app.py                    # V1 — Streamlit UI (LSTM only)
+├── app_v2.py                 # V2 — Streamlit UI (LSTM + XGBoost)
+├── simulation_engine.py      # V1 — simulation logic
+├── simulation_engine_v2.py   # V2 — simulation logic
+├── filter_data.py            # Data preprocessing script
+├── lstm_model.h5             # Pre-trained LSTM model
+├── scaler.pkl                # Scaler used with LSTM
+├── solar_xgb_model.pkl       # Pre-trained XGBoost solar model (V2 only)
+├── BR02_final_data.csv       # Load data (used by V1 and V2)
+├── clean_solar_15min.csv     # 15-min solar data (used by V2 only)
+└── requirements.txt          # Python dependencies
+```
+
+---
+
+## ✅ Prerequisites
+
+Before you begin, make sure you have:
+
+- **Python 3.10–3.12** — TensorFlow only supports specific versions. Check the [official TensorFlow install guide](https://www.tensorflow.org/install/pip) for your OS.
+- **Git** — to clone this repository
+
+---
+
+## 🚀 Getting Started
+
+### Step 1 — Clone the Repository
+
+```bash
+git clone https://github.com/sengarshivansh/EL-6th-Sem.git
+cd EL-6th-Sem
+```
+
+> **Windows tip:** If your folder path has spaces, wrap it in quotes:
+> ```cmd
+> cd "C:\path\to\EL-6th-Sem"
+> ```
+
+---
+
+### Step 2 — Create a Virtual Environment
+
+Using a virtual environment keeps dependencies isolated from your system Python.
+
+**Windows (PowerShell)**
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+**Windows (Command Prompt)**
+```cmd
+python -m venv venv
+venv\Scripts\activate.bat
+```
+
+**macOS / Linux**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Once activated, you'll see `(venv)` at the start of your terminal prompt.
+
+---
+
+### Step 3 — Install Dependencies
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+This installs: **Streamlit, pandas, NumPy, joblib, XGBoost, and TensorFlow**.
+
+> **Optional:** If pandas shows warnings about missing packages, run:
+> ```bash
+> python -m pip install "numexpr>=2.10.2" "bottleneck>=1.4.2"
+> ```
+
+---
+
+### Step 4 — Check Required Files
+
+Make sure all the following files are present in the project root before running the app:
+
+| File | Required by |
+|---|---|
+| `BR02_final_data.csv` | V1 and V2 |
+| `lstm_model.h5` | V1 and V2 |
+| `scaler.pkl` | V1 and V2 |
+| `clean_solar_15min.csv` | V2 only |
+| `solar_xgb_model.pkl` | V2 only |
+
+> ⚠️ If any file is missing, the app will crash on startup with a file-not-found error.
+
+> 📌 **Note for collaborators:** Large binary files (`.h5`, `.pkl`) and big CSVs may exceed GitHub's file size limits. If they are missing from the repo, download them from the shared drive link provided by the project owner, and place them in the project root.
+
+---
+
+### Step 5 — Run the App
+
+Always use `python -m streamlit` (not just `streamlit`) to ensure it runs in your virtual environment.
+
+**Run V2 — Hybrid AI (LSTM + XGBoost)** *(recommended)*
+```bash
+python -m streamlit run app_v2.py
+```
+
+**Run V1 — LSTM only**
+```bash
+python -m streamlit run app.py
+```
+
+Then open the URL shown in the terminal — usually **http://localhost:8501** — in your browser.
+
+---
+
+### Step 6 — Stop the App
+
+Press `Ctrl+C` in the terminal to stop the server.
+
+To exit the virtual environment:
+```bash
+deactivate
+```
+
+---
+
+## 🛠️ Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `ModuleNotFoundError` (e.g. `xgboost`) | Make sure your venv is activated, then run `python -m pip install -r requirements.txt` |
+| Imports loading from Anaconda instead of venv | Use `python -m streamlit run app_v2.py` instead of just `streamlit run app_v2.py` |
+| TensorFlow installation fails | Check that your Python version is supported — see [TensorFlow install docs](https://www.tensorflow.org/install/pip) |
+| Port 8501 already in use | Run on a different port: `python -m streamlit run app_v2.py --server.port 8502` |
+
+---
+
+## 🧠 How It Works
+
+The project simulates a small-scale power grid (microgrid) with the following components:
+
+- **Load Forecasting** — An LSTM (Long Short-Term Memory) neural network predicts electricity demand based on historical load data (`BR02_final_data.csv`).
+- **Solar Forecasting** (V2 only) — An XGBoost model predicts solar power generation using 15-minute interval solar data (`clean_solar_15min.csv`).
+- **Simulation Engine** — Combines forecasted load and solar generation to simulate grid behavior, showing surplus/deficit in real time on the Streamlit dashboard.
+
+---
+
+## 📦 Tech Stack
+
+| Tool | Purpose |
+|---|---|
+| [Streamlit](https://streamlit.io) | Interactive web dashboard |
+| [TensorFlow / Keras](https://www.tensorflow.org) | LSTM model for load forecasting |
+| [XGBoost](https://xgboost.readthedocs.io) | Solar generation forecasting |
+| [pandas](https://pandas.pydata.org) | Data loading and manipulation |
+| [NumPy](https://numpy.org) | Numerical computations |
+| [joblib](https://joblib.readthedocs.io) | Loading saved model files (`.pkl`) |
